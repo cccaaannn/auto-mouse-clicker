@@ -15,16 +15,18 @@ public class clicker_thread extends Thread {
 	int delay_between_loops = 0;
 	boolean loop_clicks = false;
 
-
+	//terminator
+	boolean TERMINATOR = false;
+	
+	
+	/*
+	*parameters
+	*mouse_coordinates doubly integer array
+	*delay  delay between clicks
+	*delay_between_loops  delay between lick loop cycle
+	*loop_clicks  loop decision
+	*/
 	public clicker_thread(ArrayList<ArrayList<Integer>> mouse_coordinates,int delay,int delay_between_loops,boolean loop_clicks){
-		
-		/*
-		*parameters
-		*mouse_coordinates doubly integer array
-		*delay  delay between clicks
-		*delay_between_loops  delay between lick loop cycle
-		*loop_clicks  loop decision
-		*/
 		
 		try {
 			r = new Robot();
@@ -44,17 +46,28 @@ public class clicker_thread extends Thread {
 		this.mouse_coordinates.get(0).addAll(mouse_coordinates.get(0));
 		this.mouse_coordinates.get(1).addAll(mouse_coordinates.get(1));
 
-
 	}
 
 
 
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Thread#run()
+	 * 
+	 * moves pointer to next location on the mouse_coordinates list and clicks
+	 * repeats if loop clicks parameter is checked
+	 */
 	public void run(){
-
+		
 		do {
 		for (int i = 0; i < mouse_coordinates.get(0).size(); i++) {
 
+			//terminate thread 
+			if(TERMINATOR) {
+				return;
+			}
+			
 			//r.mouseMove(mouse_coordinates.get(0).get(i), mouse_coordinates.get(1).get(i));    
 			moveMouse(mouse_coordinates.get(0).get(i), mouse_coordinates.get(1).get(i),3,r);
 
@@ -84,8 +97,19 @@ public class clicker_thread extends Thread {
 		
 	}
 
-
-	//if mouse is not on proper position move it again
+	
+	/*
+	 * terminates thread
+	 */
+	public void terminate() {
+		TERMINATOR = true;
+	}
+	
+	
+	/*
+	 * if mouse is not on proper position move it again
+	 * mouse can be moved wrongly due to the mousemove functions error on this version
+	 */
 	public static void moveMouse(int x, int y, int maxTimes, Robot screenWin) {
 		for(int count = 0;(MouseInfo.getPointerInfo().getLocation().getX() != x || 
 				MouseInfo.getPointerInfo().getLocation().getY() != y) &&
